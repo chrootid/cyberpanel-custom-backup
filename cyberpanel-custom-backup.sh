@@ -1,8 +1,35 @@
 #!/bin/bash
 # manual: https://community.cyberpanel.net/t/cyberpanel-command-line-interface/30683
 
-function init_dir {
-	BACKUPDIR=/backup/$(date +%F)
+function require_root {
+	if [[ $(id -u "$(whoami)") -ne 0 ]];then
+		echo "You are $(whoami)"
+		echo "Require root"
+		exit
+	fi
+}
+
+function require_cyberpanel {
+	if [[ -z $(which cyberpanel) ]];then
+		echo "Only work for CyberPanel"
+		exit
+	fi
+}
+
+function require_ncftp {
+	if [[ -z $(which ncftpput) ]];then
+		# install ncftp
+		apt-get install ncftp
+	fi
+}
+
+function init_vars {
+	BACKUP=/backup
+	RETENTION=7
+	BACKUPDIR=$BACKUP/$(date +%F)
+}
+
+function init_backupdir {
 	if [[ ! -d "$BACKUPDIR" ]];then
 		mkdir -p "$BACKUPDIR"
 	fi
@@ -45,10 +72,36 @@ function ftp_upload {
 	fi
 }
 
-init_dir
+function total_backup {
+	TOTAL_BACKUP=$(find $BACKUP -name "[0-9][0-9][0-9][0-9]\-[0-9][0-9]\-[0-9][0-9]" -type d|wc -l)
+}
+
+function retention_backup {
+	if [[ "$TOTAL_BACKUP" -gt "$RETENTION" ]];then
+		TOTALDEL=$(( "$RETENTION" - "$TOTAL_BACKUP" ))
+		find "$BACKUP" -name "[0-9][0-9][0-9][0-9]\-[0-9][0-9]\-[0-9][0-9]" -type d|sort|head -n "$TOTALDEL"|while read -r DELBACKUP;do
+			if [[ -d "$DELBACKUP" ]];then
+				rm -rf "$DELBACKUP";
+			fi
+		done
+fi
+}
+
+# main program
+
+# requirement check
+require_root
+require_cyberpanel
+require_ncftp
+
+init_vars
+init_backupdir
 cyberpanel listWebsitesPretty|awk '/Active/ {print $4}'|while read -r WEBSITE;do echo "$WEBSITE";
 	backup_homedir
 	backup_mysql
 	backup_dnszone
 done
+
+total_backup
+retention_backup
 ftp_upload
