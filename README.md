@@ -15,8 +15,8 @@ Backup Features.
 5. Retention Backup
 
 Usage
-<code>
+```
 # git clone https://github.com/chrootid/cyberpanel-custom-backup.git
 # chmod 700 cyberpanel-custom-backup/cyberpanel-custom-backup.sh
 # bash cyberpanel-custom-backup/cyberpanel-custom-backup.sh
-</code>
+```
