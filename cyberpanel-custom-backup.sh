@@ -33,7 +33,7 @@ function ftp_upload {
 		FTPUSERNAME=$(awk '/login/ {print $2}' /root/.netrc)
 		FTPPASSWORD=$(awk '/password/ {print $2}' /root/.netrc)
 		FTPHOSTNAME=$(awk '/machine/ {print $2}' /root/.netrc)
-		if [[ -n $FTPUSERNAME ]] || [[ -n $FTPPASSWORD ]] || [[ -n $FTPHOSTNAME ]];then
+		if [[ -n $FTPUSERNAME ]] && [[ -n $FTPPASSWORD ]] && [[ -n $FTPHOSTNAME ]];then
 			ncftpput -R -v -u "$FTPUSERNAME" -p "$FTPPASSWORD" "$FTPHOSTNAME" . "$BACKUPDIR"
 		fi
 	else
