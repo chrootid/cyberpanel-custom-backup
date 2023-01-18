@@ -5,7 +5,7 @@ Requirement
 3. ncftp client
 
 Backup Directory
-/backup
+1. /backup
 
 Backup Features.
 1. Backup Website Home Directory
@@ -13,3 +13,10 @@ Backup Features.
 3. Backup DNS Zones
 4. Backup to Remote Server via FTP
 5. Retention Backup
+
+Usage
+<code>
+# git clone https://github.com/chrootid/cyberpanel-custom-backup.git
+# chmod 700 cyberpanel-custom-backup/cyberpanel-custom-backup.sh
+# bash cyberpanel-custom-backup/cyberpanel-custom-backup.sh
+</code>
